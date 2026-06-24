@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trackkar – Visual Habit Tracker</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="A premium visual habit tracker to monitor routines, streaks, and progress with gamified rewards.">
+  <meta name="theme-color" content="#5b0f5f">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- ==================== ONBOARDING SCREEN ==================== -->
+  <div id="onboarding-overlay" class="modal-overlay active">
+    <div class="onboarding-card">
+      <div class="onboarding-header">
+        <h2 class="serif-title">Welcome to Trackkar</h2>
+        <p class="subtitle">Design your ideal routine and visualize your journey.</p>
+      </div>
+      <form id="onboarding-form">
+        <div class="form-group">
+          <label for="ob-username">What is your name?</label>
+          <input type="text" id="ob-username" placeholder="e.g., Jane Doe" required autocomplete="name">
+        </div>
+
+
+
+        <div class="form-group">
+          <label for="ob-theme">Select your Primary Goal Theme</label>
+          <select id="ob-theme" required>
+            <option value="Productivity" selected>Productivity & Growth</option>
+            <option value="Study">Academic Success (Study)</option>
+            <option value="Fitness">Physical Fitness & Strength</option>
+            <option value="Health">Overall Health & Wellness</option>
+            <option value="Spiritual">Spiritual Routine & Gratitude</option>
+            <option value="Job Search">Career & Job Search</option>
+            <option value="Custom">Custom Routine</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Get Started</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MAIN APPLICATION LAYOUT ==================== -->
+  <div class="app-container">
+    
+    <!-- SIDEBAR NAVIGATION (Desktop) -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="Logo.png" alt="Trackkar Logo" class="brand-logo">
+        <h1 class="brand-name serif-title">Trackkar</h1>
+      </div>
+      <nav class="nav-menu">
+        <button class="nav-item active" data-view="dashboard" id="nav-dash-desktop">
+          <svg viewBox="0 0 24 24" class="nav-icon"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-view="tracker" id="nav-tracker-desktop">
+          <svg viewBox="0 0 24 24" class="nav-icon"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+          <span>Routine Tracker</span>
+        </button>
+        <button class="nav-item" data-view="habits" id="nav-habits-desktop">
+          <svg viewBox="0 0 24 24" class="nav-icon"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+          <span>Habit List</span>
+        </button>
+        <button class="nav-item" data-view="analytics" id="nav-analytics-desktop">
+          <svg viewBox="0 0 24 24" class="nav-icon"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+          <span>Analytics</span>
+        </button>
+        <button class="nav-item" data-view="settings" id="nav-settings-desktop">
+          <svg viewBox="0 0 24 24" class="nav-icon"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          <span>Settings</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="content-wrapper">
+      
+      <!-- TOP HEADER -->
+      <header class="app-header">
+        <div class="header-left">
+          <div class="mobile-brand">
+            <img src="Logo.png" alt="Trackkar Logo" class="brand-logo">
+            <h1 class="brand-name serif-title">Trackkar</h1>
+          </div>
+          <div class="period-picker-container" id="header-period-picker">
+            <select id="header-month-select" class="header-select" aria-label="Select Month">
+              <option value="0">January</option>
+              <option value="1">February</option>
+              <option value="2">March</option>
+              <option value="3">April</option>
+              <option value="4">May</option>
+              <option value="5">June</option>
+              <option value="6">July</option>
+              <option value="7">August</option>
+              <option value="8">September</option>
+              <option value="9">October</option>
+              <option value="10">November</option>
+              <option value="11">December</option>
+            </select>
+            <select id="header-year-select" class="header-select" aria-label="Select Year">
+              <!-- Dynamic population -->
+            </select>
+          </div>
+        </div>
+        <div class="header-right">
+          <!-- Install Button (PWA) -->
+          <button id="pwa-install-btn" class="btn btn-accent btn-sm hidden">
+            <svg viewBox="0 0 24 24" class="btn-icon"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+            Install App
+          </button>
+
+          
+          <div class="user-profile">
+            <span class="user-greeting">Hi, <strong id="header-username">User</strong></span>
+            <span class="badge badge-primary level-tag">Lv.<span id="header-level">1</span></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- ==================== MAIN VIEW DISPLAY ==================== -->
+      <main class="main-content">
+
+        <!-- VIEW: DASHBOARD -->
+        <section id="view-dashboard" class="app-view active">
+          <div class="welcome-banner">
+            <h2 class="serif-title welcome-text">Ready to conquer your goals, <span id="dash-username">Jane</span>?</h2>
+            <p>You have completed <span id="dash-completed-today">0</span> habits today. Keep going!</p>
+          </div>
+
+          <!-- Quick Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card card">
+              <div class="stat-header">
+                <h3>Monthly Progress</h3>
+                <div class="stat-icon circle-icon water-bg">✓</div>
+              </div>
+              <div class="radial-progress-wrapper">
+                <svg class="radial-progress-svg" viewBox="0 0 36 36">
+                  <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path id="radial-progress-bar" class="circle-fg" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="radial-text" id="dash-completion-rate">0%</div>
+              </div>
+            </div>
+
+            <div class="stat-card card">
+              <div class="stat-header">
+                <h3>Gamification XP</h3>
+                <div class="stat-icon circle-icon star-bg">⚡</div>
+              </div>
+              <div class="xp-display">
+                <span class="level-indicator">Level <strong id="dash-level">1</strong></span>
+                <span class="xp-ratio"><span id="dash-current-xp">0</span> / <span id="dash-next-xp">100</span> XP</span>
+              </div>
+              <div class="xp-progress-bar-container">
+                <div id="dash-xp-fill" class="xp-progress-bar-fill" style="width: 0%;"></div>
+              </div>
+              <p class="xp-subtext">Earn XP by completing habits. Complete all active habits for a Perfect Day +50 XP!</p>
+            </div>
+
+            <div class="stat-card card">
+              <div class="stat-header">
+                <h3>Active Streaks</h3>
+                <div class="stat-icon circle-icon fire-bg">🔥</div>
+              </div>
+              <div class="streak-data">
+                <div class="streak-item">
+                  <span class="label">Current Best</span>
+                  <span class="value" id="dash-current-streak">0 days</span>
+                </div>
+                <div class="streak-item">
+                  <span class="label">Longest Streak</span>
+                  <span class="value" id="dash-longest-streak">0 days</span>
+                </div>
+              </div>
+              <div id="streak-badges-mini" class="badge-row flex-row">
+                <!-- Badges will be generated here -->
+              </div>
+            </div>
+
+            <div class="stat-card card">
+              <div class="stat-header">
+                <h3>Badges Unlocked</h3>
+                <div class="stat-icon circle-icon badge-bg">🏆</div>
+              </div>
+              <div id="badges-unlocked-grid" class="badges-grid-mini">
+                <!-- Lock icons or unlocked badges -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Don't Break the Chain Section -->
+          <div class="card chain-card section-margin">
+            <h3 class="serif-title flex-between">
+              <span>Don't Break the Chain</span>
+              <span class="subtitle-text">Keep your streaks alive!</span>
+            </h3>
+            <div id="chain-habits-container" class="chain-list">
+              <!-- Habit chain visualization rows -->
+            </div>
+          </div>
+
+          <!-- Weekly Overview & Top Habits Layout -->
+          <div class="dashboard-row section-margin">
+            <!-- Weekly Cards -->
+            <div class="card half-card">
+              <h3 class="serif-title">Weekly Progress</h3>
+              <div id="weekly-progress-cards" class="weekly-cards-grid">
+                <!-- 7 days summary -->
+              </div>
+            </div>
+
+            <!-- Top 10 Habits Table -->
+            <div class="card half-card">
+              <h3 class="serif-title">Top 10 Habits This Month</h3>
+              <div class="table-container">
+                <table class="data-table" id="top-habits-table">
+                  <thead>
+                    <tr>
+                      <th>Habit</th>
+                      <th>Category</th>
+                      <th>Completion</th>
+                      <th>Streak</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Top habits rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quote Widget -->
+          <div class="quote-card section-margin text-center">
+            <p id="motivational-quote" class="quote-text">"The secret of your future is hidden in your daily routine."</p>
+            <cite id="quote-author" class="quote-author">— Mike Murdock</cite>
+          </div>
+        </section>
+
+        <!-- VIEW: ROUTINE TRACKER (Combined Monthly & Weekly) -->
+        <section id="view-tracker" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2 class="serif-title">Routine Tracker</h2>
+              <p class="subtitle">Monitor your habits and log your progress. Completed (✓), Missed (✕), Blank Untracked.</p>
+            </div>
+            
+            <!-- Tab selector buttons for sub-views -->
+            <div class="toggle-group-theme" style="max-width: 240px;">
+              <button type="button" class="btn-theme-select active" id="btn-tracker-monthly">Monthly Grid</button>
+              <button type="button" class="btn-theme-select" id="btn-tracker-weekly">Weekly View</button>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW: MONTHLY GRID -->
+          <div id="tracker-monthly-container" class="tracker-sub-view">
+            <div class="flex-row margin-bottom-md" style="justify-content: flex-end;">
+              <div class="legend-item"><span class="legend-box completed-box"></span> Completed (✓)</div>
+              <div class="legend-item"><span class="legend-box missed-box"></span> Missed (✕)</div>
+              <div class="legend-item"><span class="legend-box blank-box"></span> Untracked</div>
+            </div>
+            
+            <div class="grid-card card">
+              <div class="grid-table-container">
+                <table class="tracker-grid-table" id="tracker-grid-table">
+                  <thead>
+                    <!-- Header generated dynamically -->
+                  </thead>
+                  <tbody>
+                    <!-- Rows generated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUB-VIEW: WEEKLY GRID -->
+          <div id="tracker-weekly-container" class="tracker-sub-view hidden">
+            <div class="weekly-view-container card">
+              <div class="grid-table-container">
+                <table class="weekly-grid-table" id="weekly-grid-table">
+                  <thead>
+                    <!-- Dynamic -->
+                  </thead>
+                  <tbody>
+                    <!-- Dynamic -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW: HABIT LIST -->
+        <section id="view-habits" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2 class="serif-title">Routine Management</h2>
+              <p class="subtitle">Create, edit, toggle, and organize your habits.</p>
+            </div>
+            <button id="add-habit-btn" class="btn btn-primary">
+              <svg viewBox="0 0 24 24" class="btn-icon"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+              Add Habit
+            </button>
+          </div>
+
+          <!-- Preset templates bar -->
+          <div class="card template-card section-margin">
+            <h3 class="serif-title font-md margin-bottom-sm">Preset Routines</h3>
+            <p class="subtitle margin-bottom-md">Need inspiration? Add a themed stack of habits in one click:</p>
+            <div class="preset-buttons-row">
+              <button class="preset-btn" data-preset="student">🎓 Student Routine</button>
+              <button class="preset-btn" data-preset="fitness">💪 Fitness Routine</button>
+              <button class="preset-btn" data-preset="job">💼 Job Seeker</button>
+              <button class="preset-btn" data-preset="spiritual">🙏 Spiritual Routine</button>
+              <button class="preset-btn" data-preset="detox">📱 Digital Detox</button>
+              <button class="preset-btn" data-preset="growth">🚀 Self Improvement</button>
+            </div>
+          </div>
+
+          <!-- Habits Display Grid -->
+          <div class="habits-list-grid" id="habits-list-grid">
+            <!-- Habit cards are rendered here -->
+          </div>
+        </section>
+
+        <!-- VIEW: ANALYTICS -->
+        <section id="view-analytics" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2 class="serif-title">Analytics & Visualizations</h2>
+              <p class="subtitle">Understand your compliance patterns, best categories, and historical streaks.</p>
+            </div>
+          </div>
+
+          <div class="analytics-overview-row">
+            <div class="card analytic-stat-card">
+              <span class="label">Best Performing Habit</span>
+              <span class="value text-success" id="anal-best-habit">None</span>
+              <span class="subtext" id="anal-best-rate">0% completion rate</span>
+            </div>
+            <div class="card analytic-stat-card">
+              <span class="label">Weakest Habit</span>
+              <span class="value text-danger" id="anal-weakest-habit">None</span>
+              <span class="subtext" id="anal-weakest-rate">0% completion rate</span>
+            </div>
+            <div class="card analytic-stat-card">
+              <span class="label">Overall Completion</span>
+              <span class="value" id="anal-overall-rate">0%</span>
+              <span class="subtext" id="anal-total-checks">0 check-ins this month</span>
+            </div>
+          </div>
+
+          <div class="charts-grid section-margin">
+            <!-- Chart 1: Daily Bar Chart -->
+            <div class="card chart-card">
+              <h3 class="serif-title">Daily Progress</h3>
+              <div class="chart-container">
+                <canvas id="dailyChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 2: Weekly Line Chart -->
+            <div class="card chart-card">
+              <h3 class="serif-title">Weekly Performance</h3>
+              <div class="chart-container">
+                <canvas id="weeklyChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 3: Category Radar Chart -->
+            <div class="card chart-card">
+              <h3 class="serif-title">Category-wise Completion</h3>
+              <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 4: Habit Completion Donut Chart -->
+            <div class="card chart-card">
+              <h3 class="serif-title">Completion Ratio</h3>
+              <div class="chart-container">
+                <canvas id="donutChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW: SETTINGS -->
+        <section id="view-settings" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2 class="serif-title">System Settings</h2>
+              <p class="subtitle">Customize your user experience, backup your data, or reset configurations.</p>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <!-- Block 1: Profile Settings -->
+            <div class="card">
+              <h3 class="serif-title margin-bottom-md">Profile Settings</h3>
+              <form id="settings-profile-form">
+                <div class="form-group">
+                  <label for="settings-username">Display Name</label>
+                  <input type="text" id="settings-username" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Profile</button>
+              </form>
+            </div>
+
+            <!-- Block 2: Styling and Customization -->
+            <div class="card">
+              <h3 class="serif-title margin-bottom-md">Visual Theme Customization</h3>
+
+
+              <div class="form-group">
+                <label>Accent Design Color</label>
+                <div class="color-palette-picker">
+                  <button type="button" class="color-dot active" data-color="#8a2be2" style="background-color: #8a2be2;" aria-label="Purple"></button>
+                  <button type="button" class="color-dot" data-color="#008080" style="background-color: #008080;" aria-label="Teal"></button>
+                  <button type="button" class="color-dot" data-color="#ff1493" style="background-color: #ff1493;" aria-label="Pink"></button>
+                  <button type="button" class="color-dot" data-color="#1e90ff" style="background-color: #1e90ff;" aria-label="Blue"></button>
+                  <button type="button" class="color-dot" data-color="#2e8b57" style="background-color: #2e8b57;" aria-label="Green"></button>
+                  <button type="button" class="color-dot" data-color="#ff4500" style="background-color: #ff4500;" aria-label="Orange"></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Block 3: Backup & Export -->
+            <div class="card">
+              <h3 class="serif-title margin-bottom-md">Backup & Document Generation</h3>
+              <p class="subtitle margin-bottom-md">Download reports or transfer your database between devices.</p>
+              
+              <div class="button-vertical-stack">
+                <button id="btn-export-json" class="btn btn-secondary flex-center">
+                  <svg viewBox="0 0 24 24" class="btn-icon"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                  Backup Data (JSON)
+                </button>
+                
+                <div class="file-upload-wrapper">
+                  <label for="import-json-file" class="btn btn-secondary flex-center cursor-pointer">
+                    <svg viewBox="0 0 24 24" class="btn-icon"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+                    Restore Backup (JSON)
+                  </label>
+                  <input type="file" id="import-json-file" accept=".json" class="hidden">
+                </div>
+
+                <button id="btn-export-csv" class="btn btn-secondary flex-center">
+                  <svg viewBox="0 0 24 24" class="btn-icon"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                  Export Grid to CSV
+                </button>
+
+                <button id="btn-print-dashboard" class="btn btn-secondary flex-center">
+                  <svg viewBox="0 0 24 24" class="btn-icon"><path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/></svg>
+                  Print Report & Dashboard
+                </button>
+              </div>
+            </div>
+
+            <!-- Block 4: Danger Zone -->
+            <div class="card border-danger">
+              <h3 class="serif-title text-danger margin-bottom-sm">Danger Zone</h3>
+              <p class="subtitle margin-bottom-md">Operations here are irreversible. Be cautious.</p>
+              
+              <div class="button-vertical-stack">
+                <button id="btn-reset-month" class="btn btn-outline-danger">Reset Active Month Progress</button>
+                <button id="btn-clear-all" class="btn btn-danger">Wipe Database & Onboarding</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Sticky mobile bottom CTA/Add button -->
+      <button id="mobile-add-btn" class="mobile-cta-btn" aria-label="Add New Habit">
+        <svg viewBox="0 0 24 24" class="cta-icon"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      </button>
+
+      <!-- BOTTOM NAVIGATION (Mobile) -->
+      <nav class="mobile-nav">
+        <button class="mobile-nav-item active" data-view="dashboard" id="nav-dash-mobile">
+          <svg viewBox="0 0 24 24" class="mobile-nav-icon"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+          <span>Dash</span>
+        </button>
+        <button class="mobile-nav-item" data-view="tracker" id="nav-tracker-mobile">
+          <svg viewBox="0 0 24 24" class="mobile-nav-icon"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+          <span>Tracker</span>
+        </button>
+        <button class="mobile-nav-item" data-view="habits" id="nav-habits-mobile">
+          <svg viewBox="0 0 24 24" class="mobile-nav-icon"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+          <span>Habits</span>
+        </button>
+        <button class="mobile-nav-item" data-view="analytics" id="nav-analytics-mobile">
+          <svg viewBox="0 0 24 24" class="mobile-nav-icon"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+          <span>Charts</span>
+        </button>
+        <button class="mobile-nav-item" data-view="settings" id="nav-settings-mobile">
+          <svg viewBox="0 0 24 24" class="mobile-nav-icon"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          <span>Gear</span>
+        </button>
+      </nav>
+
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: ADD / EDIT HABIT ==================== -->
+  <div id="habit-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-title" class="serif-title">Add New Habit</h2>
+        <button id="close-modal-btn" class="close-btn" aria-label="Close Modal">
+          <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </div>
+      
+      <form id="habit-form">
+        <!-- Hidden input for editing mode -->
+        <input type="hidden" id="habit-id-input">
+        
+        <div class="form-group">
+          <label for="habit-name">Habit Name</label>
+          <input type="text" id="habit-name" placeholder="e.g., Hydrate, Jogging, Meditate" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="habit-category">Category</label>
+            <select id="habit-category" required>
+              <option value="Study" data-icon="🎓">🎓 Study</option>
+              <option value="Fitness" data-icon="💪">💪 Fitness</option>
+              <option value="Health" data-icon="❤️">❤️ Health</option>
+              <option value="Sleep" data-icon="🌙">🌙 Sleep</option>
+              <option value="Water" data-icon="💧">💧 Water</option>
+              <option value="Meditation" data-icon="🧘">🧘 Meditation</option>
+              <option value="Reading" data-icon="📚">📚 Reading</option>
+              <option value="Job Applications" data-icon="💼">💼 Job Applications</option>
+              <option value="Coding Practice" data-icon="💻">💻 Coding Practice</option>
+              <option value="No Social Media" data-icon="📵">📵 No Social Media</option>
+              <option value="No Junk Food" data-icon="🍎">🍎 No Junk Food</option>
+              <option value="Budget Tracking" data-icon="💰">💰 Budget Tracking</option>
+              <option value="Prayer/Spiritual" data-icon="🙏">🙏 Prayer/Spiritual</option>
+              <option value="Journaling" data-icon="📝">📝 Journaling</option>
+              <option value="Custom" data-icon="✨" selected>✨ Custom</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="habit-priority">Priority</label>
+            <select id="habit-priority" required>
+              <option value="Low">Low</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="habit-target">Target (Days per week)</label>
+            <select id="habit-target" required>
+              <option value="1">1 day / week</option>
+              <option value="2">2 days / week</option>
+              <option value="3">3 days / week</option>
+              <option value="4">4 days / week</option>
+              <option value="5">5 days / week</option>
+              <option value="6">6 days / week</option>
+              <option value="7" selected>7 days / week (Everyday)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="habit-color">Accent Color</label>
+            <div class="color-option-container">
+              <input type="color" id="habit-color" value="#8a2be2">
+              <span class="color-text-label">Custom hex</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group margin-top-md">
+          <label class="flex-align-center cursor-pointer">
+            <input type="checkbox" id="habit-active-checkbox" checked>
+            <span class="margin-left-sm">This habit is active (will count towards streaks and percentages)</span>
+          </label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="delete-habit-modal-btn" class="btn btn-danger hidden">Delete Habit</button>
+          <div class="modal-actions-right">
+            <button type="button" id="cancel-modal-btn" class="btn btn-secondary">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="save-habit-btn">Save Habit</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Main JavaScript File -->
+  <script src="script.js"></script>
+</body>
+</html>
